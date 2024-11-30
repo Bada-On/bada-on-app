@@ -1,44 +1,46 @@
 import { useState } from "react";
 import { StyleSheet, Alert, View, Text } from "react-native";
 import { WebView } from "react-native-webview";
+import { useGeolocation } from "./src/hooks/useGeolocation";
+import { useWebView } from "./src/hooks/useWebView";
 
 export default function App() {
-  const [ready, setReady] = useState(false);
-  const [webkey, setWebkey] = useState(0);
+  const {
+    webViewRef,
+    isWebViewReady,
+    webViewError,
+    webViewKey,
+    handleLoadStart,
+    handleLoadEnd,
+    handleError,
+    sendToWeb,
+  } = useWebView();
+
+  const { handleMessage } = useGeolocation(sendToWeb);
 
   return (
     <View style={styles.container}>
       <WebView
+        ref={webViewRef}
         style={styles.webview}
-        source={{ uri: "https://bada-on-fe.vercel.app/" }}
-        onError={(event) => {
-          console.error("WebView error:", event.nativeEvent);
-          Alert.alert("오류 발생", "웹뷰 로딩 중 오류가 발생했습니다!");
-        }}
-        onHttpError={(syntheticEvent) => {
-          const { nativeEvent } = syntheticEvent;
-          console.error("HTTP error:", nativeEvent);
-          Alert.alert("오류 발생", "웹뷰 로딩 중 오류가 발생했습니다!");
-        }}
+        source={{ uri: "http://192.168.200.199:5173" }}
+        onError={handleError}
+        onHttpError={handleError}
+        onLoadStart={handleLoadStart}
+        onLoadEnd={handleLoadEnd}
+        onMessage={handleMessage}
         javaScriptEnabled={true}
         domStorageEnabled={true}
         originWhitelist={["*"]}
         scalesPageToFit={true}
         mixedContentMode="compatibility"
-        key={webkey}
-        onLoadStart={(e) => {
-          const { nativeEvent } = e;
-          if (nativeEvent.url === "about:blank" && !ready) {
-            setWebkey(Date.now());
-          }
-        }}
-        onLoadEnd={() => {
-          if (!ready) {
-            setWebkey(Date.now());
-            setReady(true);
-          }
-        }}
+        key={webViewKey}
       />
+      {webViewError && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{webViewError}</Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -49,5 +51,20 @@ const styles = StyleSheet.create({
   },
   webview: {
     flex: 1,
+  },
+  errorContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(255, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });

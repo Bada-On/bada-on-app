@@ -18,6 +18,7 @@ interface GeolocationError {
   };
 }
 
+// TODO: 위치 정보 구독 기능 추가
 export const useGeolocation = (
   sendToWeb: (data: LocationData | GeolocationError) => boolean
 ) => {
@@ -26,7 +27,7 @@ export const useGeolocation = (
       const { status: existingStatus } =
         await Location.getForegroundPermissionsAsync();
 
-      console.log("existingStatus", existingStatus);
+      // console.log("existingStatus", existingStatus);
 
       if (existingStatus === "granted") {
         return true;
@@ -61,7 +62,7 @@ export const useGeolocation = (
         accuracy: Location.Accuracy.High,
       });
 
-      console.log("location", location);
+      // console.log("location", location);
 
       const locationData: LocationData = {
         type: "location",
@@ -89,7 +90,7 @@ export const useGeolocation = (
       // Alert.alert("event", event.nativeEvent.data);
       try {
         const data = JSON.parse(event.nativeEvent.data);
-        console.log("data", data);
+        // console.log("data", data);
         if (data.type === "GET_LOCATION") {
           handleGeolocation();
         }

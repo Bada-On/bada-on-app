@@ -1,15 +1,12 @@
-import { useRef, useCallback } from "react";
-import { Alert, Platform, PermissionsAndroid } from "react-native";
-import Geolocation from "@react-native-community/geolocation";
-import type { WebView } from "react-native-webview";
+import { useCallback } from "react";
+import { Alert, Platform } from "react-native";
+import * as Location from "expo-location";
 
 interface LocationData {
   type: "location";
   payload: {
     latitude: number;
     longitude: number;
-    accuracy?: number;
-    timestamp?: number;
   };
 }
 
@@ -21,34 +18,22 @@ interface GeolocationError {
   };
 }
 
-export const useGeolocation = () => {
-  const webViewRef = useRef<WebView | null>(null);
-
+export const useGeolocation = (
+  sendToWeb: (data: LocationData | GeolocationError) => boolean
+) => {
   const requestLocationPermission = async () => {
-    if (Platform.OS === "ios") {
-      return new Promise<boolean>((resolve) => {
-        Geolocation.requestAuthorization(
-          () => resolve(true),
-          (error) => {
-            console.error("iOS 위치 권한 오류:", error);
-            resolve(false);
-          }
-        );
-      });
-    }
-
     try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: "위치 정보 권한",
-          message: "현재 위치 정보를 확인하기 위해 권한이 필요합니다.",
-          buttonNeutral: "다음에 묻기",
-          buttonNegative: "거부",
-          buttonPositive: "허용",
-        }
-      );
-      return granted === PermissionsAndroid.RESULTS.GRANTED;
+      const { status: existingStatus } =
+        await Location.getForegroundPermissionsAsync();
+
+      console.log("existingStatus", existingStatus);
+
+      if (existingStatus === "granted") {
+        return true;
+      }
+
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      return status === "granted";
     } catch (err) {
       console.error("권한 요청 오류:", err);
       return false;
@@ -66,49 +51,45 @@ export const useGeolocation = () => {
           message: "위치 정보 권한이 거부되었습니다.",
         },
       };
-      webViewRef.current?.postMessage(JSON.stringify(error));
+      sendToWeb(error);
       Alert.alert("권한 오류", "위치 정보 권한이 필요합니다.");
       return;
     }
 
-    Geolocation.getCurrentPosition(
-      (position) => {
-        const locationData: LocationData = {
-          type: "location",
-          payload: {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            accuracy: position.coords.accuracy,
-            timestamp: position.timestamp,
-          },
-        };
-        webViewRef.current?.postMessage(JSON.stringify(locationData));
-      },
-      (error) => {
-        console.error("위치 정보 오류:", error);
-        const errorData: GeolocationError = {
-          type: "location_error",
-          payload: {
-            code: error.code,
-            message: error.message,
-          },
-        };
-        webViewRef.current?.postMessage(JSON.stringify(errorData));
-        Alert.alert("위치 정보 오류", "위치 정보를 가져오는데 실패했습니다.");
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 10000,
-      }
-    );
-  }, []);
+    try {
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+
+      console.log("location", location);
+
+      const locationData: LocationData = {
+        type: "location",
+        payload: {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        },
+      };
+      sendToWeb(locationData);
+    } catch (error: any) {
+      const errorData: GeolocationError = {
+        type: "location_error",
+        payload: {
+          code: error.code || 0,
+          message: error.message || "위치 정보를 가져오는데 실패했습니다.",
+        },
+      };
+      sendToWeb(errorData);
+      Alert.alert("위치 정보 오류", "위치 정보를 가져오는데 실패했습니다.");
+    }
+  }, [sendToWeb]);
 
   const handleMessage = useCallback(
     (event: any) => {
-      console.log("event", event);
+      // Alert.alert("event", event.nativeEvent.data);
       try {
         const data = JSON.parse(event.nativeEvent.data);
+        console.log("data", data);
         if (data.type === "GET_LOCATION") {
           handleGeolocation();
         }
@@ -120,7 +101,6 @@ export const useGeolocation = () => {
   );
 
   return {
-    webViewRef,
     handleMessage,
   };
 };

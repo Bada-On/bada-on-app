@@ -46,8 +46,8 @@ export const useWebView = () => {
       }
 
       try {
-        console.log("data", data);
-        console.log("webViewRef.current", webViewRef.current);
+        // console.log("data", data);
+        // console.log("webViewRef.current", webViewRef.current);
         webViewRef.current?.postMessage(JSON.stringify(data));
         return true;
       } catch (error) {

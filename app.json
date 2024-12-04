@@ -4,11 +4,11 @@
     "slug": "bada-on-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/badaon_logo.png",
+    "icon": "./assets/badaon-logo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/badaon_logo.png",
+      "image": "./assets/badaon-logo.png",
       "resizeMode": "cover",
       "backgroundColor": "#1764BE"
     },
@@ -17,7 +17,8 @@
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "이 앱은 현재 위치 정보를 사용하여 서비스를 제공합니다.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "이 앱은 현재 위치 정보를 사용하여 서비스를 제공합니다."
-      }
+      },
+      "bundleIdentifier": "com.hanbeulyou.badaonapp"
     },
     "android": {
       "adaptiveIcon": {
@@ -33,6 +34,7 @@
       "eas": {
         "projectId": "59a319a0-7442-4487-ba2a-4e8c42f4e343"
       }
-    }
+    },
+    "owner": "hanbeulyou"
   }
 }

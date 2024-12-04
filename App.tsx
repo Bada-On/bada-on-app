@@ -7,6 +7,7 @@ import {
   SafeAreaProvider,
   SafeAreaInsetsContext,
 } from "react-native-safe-area-context";
+import { useFCMToken } from "./src/hooks/useFCMToken";
 import * as SplashScreen from "expo-splash-screen";
 
 export default function App() {
@@ -22,6 +23,20 @@ export default function App() {
   } = useWebView();
 
   const { handleMessage: handleGeolocationMessage } = useGeolocation(sendToWeb);
+  const { fcmToken, loading, error } = useFCMToken({
+    serverUrl: "", // 실제 서버 URL로 변경
+    onTokenReceived: (token) => {
+      console.log("FCM Token received in App:", token);
+      // 필요한 경우 추가 처리
+    },
+  });
+
+  useEffect(() => {
+    if (error) {
+      console.error("FCM Token Error:", error);
+      // 에러 처리
+    }
+  }, [error]);
 
   const handleMessage = (event: WebViewMessageEvent) => {
     try {

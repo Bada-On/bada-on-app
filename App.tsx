@@ -41,7 +41,7 @@ export default function App() {
         // Splash Screen 유지
         await SplashScreen.preventAutoHideAsync();
         // 초기화 작업 (예: 데이터 로드)
-        await new Promise((resolve) => setTimeout(resolve, 3000));
+        await new Promise((resolve) => setTimeout(resolve, 2000));
       } finally {
         // 초기화 완료 후 Splash Screen 숨기기
         await SplashScreen.hideAsync();

@@ -4,13 +4,13 @@
     "slug": "bada-on-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/badaon_logo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "image": "./assets/badaon_logo.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#1764BE"
     },
     "ios": {
       "supportsTablet": true,

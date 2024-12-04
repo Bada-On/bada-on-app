@@ -7,6 +7,7 @@ import {
   SafeAreaProvider,
   SafeAreaInsetsContext,
 } from "react-native-safe-area-context";
+import * as SplashScreen from "expo-splash-screen";
 
 export default function App() {
   const {
@@ -34,6 +35,22 @@ export default function App() {
     }
   };
 
+  useEffect(() => {
+    async function prepare() {
+      try {
+        // Splash Screen 유지
+        await SplashScreen.preventAutoHideAsync();
+        // 초기화 작업 (예: 데이터 로드)
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+      } finally {
+        // 초기화 완료 후 Splash Screen 숨기기
+        await SplashScreen.hideAsync();
+      }
+    }
+
+    prepare();
+  }, []);
+
   return (
     <SafeAreaProvider>
       <SafeAreaInsetsContext.Consumer>
@@ -53,7 +70,7 @@ export default function App() {
               <WebView
                 ref={webViewRef}
                 style={styles.webview}
-                source={{ uri: "http://192.168.200.199:5173" }}
+                source={{ uri: "https://bada-on-fe.vercel.app/" }}
                 onError={handleError}
                 onHttpError={handleError}
                 onLoadStart={handleLoadStart}

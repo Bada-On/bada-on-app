@@ -4,19 +4,19 @@
     "slug": "bada-on-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/badaon-logo.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/badaon-logo.png",
+      "image": null,
       "resizeMode": "cover",
       "backgroundColor": "#1764BE"
     },
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "이 앱은 현재 위치 정보를 사용하여 서비스를 제공합니다.",
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "이 앱은 현재 위치 정보를 사용하여 서비스를 제공합니다."
+        "NSLocationWhenInUseUsageDescription": "이 앱은 현재 위치를 기반으로 근처 장소들의 기상 정보를 제공하기 위해 위치 정보가 필요합니다.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "이 앱은 현재 위치를 기반으로 근처 장소들의 기상 정보를 제공하기 위해 위치 정보가 필요합니다."
       },
       "bundleIdentifier": "com.hanbeulyou.badaonapp"
     },

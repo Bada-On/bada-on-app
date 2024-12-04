@@ -1,5 +1,6 @@
 {
   "expo": {
+    "jsEngine": "jsc",
     "name": "bada-on-app",
     "slug": "bada-on-app",
     "version": "1.0.0",
@@ -16,20 +17,32 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "이 앱은 현재 위치 정보를 사용하여 서비스를 제공합니다.",
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "이 앱은 현재 위치 정보를 사용하여 서비스를 제공합니다."
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "이 앱은 현재 위치 정보를 사용하여 서비스를 제공합니다.",
+        "UIBackgroundModes": ["remote-notification"]
       },
-      "bundleIdentifier": "com.hanbeulyou.badaonapp"
+      "bundleIdentifier": "com.hanbeulyou.badaonapp",
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"]
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ],
+      "package": "com.hanbeulyou.badaonapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/messaging"
+    ],
     "extra": {
       "eas": {
         "projectId": "59a319a0-7442-4487-ba2a-4e8c42f4e343"

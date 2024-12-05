@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, View, Text, Alert } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
 import { useGeolocation } from "./src/hooks/useGeolocation";
 import { useWebView } from "./src/hooks/useWebView";
@@ -9,8 +9,11 @@ import {
 } from "react-native-safe-area-context";
 import { useFCMToken } from "./src/hooks/useFCMToken";
 import * as SplashScreen from "expo-splash-screen";
+import Splash from "./src/components/Splash";
 
 export default function App() {
+  const [isLoading, setIsLoading] = useState(true);
+
   const {
     webViewRef,
     isWebViewReady,
@@ -53,18 +56,19 @@ export default function App() {
   useEffect(() => {
     async function prepare() {
       try {
-        // Splash Screen 유지
-        await SplashScreen.preventAutoHideAsync();
-        // 초기화 작업 (예: 데이터 로드)
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        await SplashScreen.hideAsync(); // 기본 스플래시 스크린 즉시 숨기기
+        await new Promise((resolve) => setTimeout(resolve, 2000)); // 로딩 시간 시뮬레이션
       } finally {
-        // 초기화 완료 후 Splash Screen 숨기기
-        await SplashScreen.hideAsync();
+        setIsLoading(false);
       }
     }
 
     prepare();
   }, []);
+
+  if (isLoading) {
+    return <Splash />;
+  }
 
   return (
     <SafeAreaProvider>

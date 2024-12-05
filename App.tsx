@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, Alert } from "react-native";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
 import { useGeolocation } from "./src/hooks/useGeolocation";
 import { useWebView } from "./src/hooks/useWebView";
@@ -29,7 +29,6 @@ export default function App() {
   const { fcmToken, loading, error } = useFCMToken({
     serverUrl: "", // 실제 서버 URL로 변경
     onTokenReceived: (token) => {
-      console.log("FCM Token received in App:", token);
       // 필요한 경우 추가 처리
     },
   });

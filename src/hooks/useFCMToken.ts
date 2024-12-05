@@ -9,7 +9,7 @@ interface UseFCMTokenProps {
 
 export const useFCMToken = ({
   onTokenReceived,
-  serverUrl = "https://your-server.com/api/fcm-token", // 실제 서버 URL로 변경 필요
+  serverUrl = "https://badaon.shop/api/v1/fcm/token",
 }: UseFCMTokenProps = {}) => {
   const [fcmToken, setFcmToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);

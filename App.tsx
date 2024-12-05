@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, Alert } from "react-native";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
 import { useGeolocation } from "./src/hooks/useGeolocation";
 import { useWebView } from "./src/hooks/useWebView";
@@ -7,6 +7,7 @@ import {
   SafeAreaProvider,
   SafeAreaInsetsContext,
 } from "react-native-safe-area-context";
+import { useFCMToken } from "./src/hooks/useFCMToken";
 import * as SplashScreen from "expo-splash-screen";
 import Splash from "./src/components/Splash";
 
@@ -25,6 +26,19 @@ export default function App() {
   } = useWebView();
 
   const { handleMessage: handleGeolocationMessage } = useGeolocation(sendToWeb);
+  const { fcmToken, loading, error } = useFCMToken({
+    serverUrl: "", // 실제 서버 URL로 변경
+    onTokenReceived: (token) => {
+      // 필요한 경우 추가 처리
+    },
+  });
+
+  useEffect(() => {
+    if (error) {
+      console.error("FCM Token Error:", error);
+      // 에러 처리
+    }
+  }, [error]);
 
   const handleMessage = (event: WebViewMessageEvent) => {
     try {

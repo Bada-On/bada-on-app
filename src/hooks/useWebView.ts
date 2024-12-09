@@ -7,12 +7,6 @@ export const useWebView = () => {
   const [webViewError, setWebViewError] = useState<string | null>(null);
   const [webViewKey, setWebViewKey] = useState(0);
 
-  useEffect(() => {
-    if (webViewRef.current) {
-      webViewRef.current.postMessage("message 전송");
-    }
-  }, [webViewRef]);
-
   const handleLoadStart = useCallback(
     (e: any) => {
       const { url } = e.nativeEvent;

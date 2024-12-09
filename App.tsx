@@ -12,6 +12,7 @@ import * as SplashScreen from "expo-splash-screen";
 import Splash from "./src/components/Splash";
 import * as Sentry from "@sentry/react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useUri } from "./src/hooks/useUri";
 
 Sentry.init({
   dsn: "https://aa10b1982b82743fd65161af43c96ad7@o4508425511567360.ingest.us.sentry.io/4508439167893504",
@@ -22,6 +23,7 @@ Sentry.init({
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
+  const { uri } = useUri();
 
   const {
     webViewRef,
@@ -35,44 +37,21 @@ export default function App() {
   } = useWebView();
 
   const { handleMessage: handleGeolocationMessage } = useGeolocation(sendToWeb);
-  const { fcmToken, loading, error } = useFCMToken({
-    serverUrl: "", // 실제 서버 URL로 변경
-    onTokenReceived: (token) => {
-      // 필요한 경우 추가 처리
-    },
-  });
 
-  const [uri, setUri] = useState<string>("");
+  useFCMToken();
 
-  useEffect(() => {
-    const initializeUri = async () => {
-      try {
-        const storedValue = await AsyncStorage.getItem("activity");
-        const baseUrl = "https://bada-on-fe.vercel.app";
-        setUri(
-          storedValue ? `${baseUrl}/home?selected=${storedValue}` : baseUrl
-        );
-      } catch (error) {
-        setUri("https://bada-on-fe.vercel.app/");
-      }
-    };
-
-    initializeUri();
-  }, []);
-
-  useEffect(() => {
-    if (error) {
-      console.error("FCM Token Error:", error);
-      // 에러 처리
-    }
-  }, [error]);
-
-  const handleMessage = (event: WebViewMessageEvent) => {
+  const handleMessage = async (event: WebViewMessageEvent) => {
     try {
       const data = JSON.parse(event.nativeEvent.data);
 
       if (data.type === "GET_LOCATION") {
         handleGeolocationMessage(event);
+      } else if (data.type === "POST_ACTIVITY") {
+        try {
+          await AsyncStorage.setItem("activity", data.activity);
+        } catch (error) {
+          console.error("Activity 저장 중 오류 발생:", error);
+        }
       }
     } catch (error) {
       console.error("Message handling error:", error);

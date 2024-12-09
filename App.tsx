@@ -7,10 +7,24 @@ import {
   SafeAreaProvider,
   SafeAreaInsetsContext,
 } from "react-native-safe-area-context";
+import { useFCMToken } from "./src/hooks/useFCMToken";
 import * as SplashScreen from "expo-splash-screen";
 import Splash from "./src/components/Splash";
+import * as Sentry from "@sentry/react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useUri } from "./src/hooks/useUri";
+
+Sentry.init({
+  dsn: "https://aa10b1982b82743fd65161af43c96ad7@o4508425511567360.ingest.us.sentry.io/4508439167893504",
+
+  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
+  // enableSpotlight: __DEV__,
+});
 
 export default function App() {
+  const [isLoading, setIsLoading] = useState(true);
+  const { uri } = useUri();
+
   const {
     webViewRef,
     isWebViewReady,
@@ -25,12 +39,20 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const { handleMessage: handleGeolocationMessage } = useGeolocation(sendToWeb);
 
-  const handleMessage = (event: WebViewMessageEvent) => {
+  useFCMToken();
+
+  const handleMessage = async (event: WebViewMessageEvent) => {
     try {
       const data = JSON.parse(event.nativeEvent.data);
 
       if (data.type === "GET_LOCATION") {
         handleGeolocationMessage(event);
+      } else if (data.type === "POST_ACTIVITY") {
+        try {
+          await AsyncStorage.setItem("activity", data.activity);
+        } catch (error) {
+          console.error("Activity 저장 중 오류 발생:", error);
+        }
       }
     } catch (error) {
       console.error("Message handling error:", error);
@@ -54,6 +76,10 @@ export default function App() {
     return <Splash />;
   }
 
+  if (isLoading) {
+    return <Splash />;
+  }
+
   return (
     <SafeAreaProvider>
       <SafeAreaInsetsContext.Consumer>
@@ -70,23 +96,25 @@ export default function App() {
 
           return (
             <View style={styles.container}>
-              <WebView
-                ref={webViewRef}
-                style={styles.webview}
-                source={{ uri: "https://bada-on-fe.vercel.app/" }}
-                onError={handleError}
-                onHttpError={handleError}
-                onLoadStart={handleLoadStart}
-                onLoadEnd={handleLoadEnd}
-                onMessage={handleMessage}
-                javaScriptEnabled={true}
-                domStorageEnabled={true}
-                originWhitelist={["*"]}
-                scalesPageToFit={true}
-                mixedContentMode="compatibility"
-                key={webViewKey}
-                injectedJavaScriptBeforeContentLoaded={injectsScript}
-              />
+              {uri && (
+                <WebView
+                  ref={webViewRef}
+                  style={styles.webview}
+                  source={{ uri }}
+                  onError={handleError}
+                  onHttpError={handleError}
+                  onLoadStart={handleLoadStart}
+                  onLoadEnd={handleLoadEnd}
+                  onMessage={handleMessage}
+                  javaScriptEnabled={true}
+                  domStorageEnabled={true}
+                  originWhitelist={["*"]}
+                  scalesPageToFit={true}
+                  mixedContentMode="compatibility"
+                  key={webViewKey}
+                  injectedJavaScriptBeforeContentLoaded={injectsScript}
+                />
+              )}
               {webViewError && (
                 <View style={styles.errorContainer}>
                   <Text style={styles.errorText}>{webViewError}</Text>

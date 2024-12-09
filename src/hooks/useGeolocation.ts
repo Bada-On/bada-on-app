@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { Alert, Platform } from "react-native";
 import * as Location from "expo-location";
+import * as Linking from "expo-linking";
 
 interface LocationData {
   type: "location";
@@ -45,15 +46,28 @@ export const useGeolocation = (
     const hasPermission = await requestLocationPermission();
 
     if (!hasPermission) {
-      const error: GeolocationError = {
-        type: "location_error",
-        payload: {
-          code: 1,
-          message: "위치 정보 권한이 거부되었습니다.",
-        },
-      };
-      sendToWeb(error);
-      Alert.alert("권한 오류", "위치 정보 권한이 필요합니다.");
+      // const error: GeolocationError = {
+      //   type: "location_error",
+      //   payload: {
+      //     code: 1,
+      //     message: "위치 정보 권한이 거부되었습니다.",
+      //   },
+      // };
+      // sendToWeb(error);
+      Alert.prompt(
+        "권한 오류",
+        "위치 정보 권한이 필요합니다. 설정으로 이동하시겠습니까?",
+        [
+          {
+            text: "취소",
+            style: "cancel",
+          },
+          {
+            text: "확인",
+            onPress: () => Linking.openSettings(),
+          },
+        ]
+      );
       return;
     }
 

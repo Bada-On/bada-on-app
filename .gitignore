@@ -38,3 +38,5 @@ yarn-error.*
 
 # firebase
 GoogleService-Info.plist
+
+.env.local

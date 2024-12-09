@@ -10,10 +10,11 @@ import {
 import { useFCMToken } from "./src/hooks/useFCMToken";
 import * as SplashScreen from "expo-splash-screen";
 import Splash from "./src/components/Splash";
-import * as Sentry from '@sentry/react-native';
+import * as Sentry from "@sentry/react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 Sentry.init({
-  dsn: 'https://aa10b1982b82743fd65161af43c96ad7@o4508425511567360.ingest.us.sentry.io/4508439167893504',
+  dsn: "https://aa10b1982b82743fd65161af43c96ad7@o4508425511567360.ingest.us.sentry.io/4508439167893504",
 
   // uncomment the line below to enable Spotlight (https://spotlightjs.com)
   // enableSpotlight: __DEV__,
@@ -40,6 +41,24 @@ export default function App() {
       // 필요한 경우 추가 처리
     },
   });
+
+  const [uri, setUri] = useState<string>("");
+
+  useEffect(() => {
+    const initializeUri = async () => {
+      try {
+        const storedValue = await AsyncStorage.getItem("activity");
+        const baseUrl = "https://bada-on-fe.vercel.app";
+        setUri(
+          storedValue ? `${baseUrl}/home?selected=${storedValue}` : baseUrl
+        );
+      } catch (error) {
+        setUri("https://bada-on-fe.vercel.app/");
+      }
+    };
+
+    initializeUri();
+  }, []);
 
   useEffect(() => {
     if (error) {
@@ -93,23 +112,25 @@ export default function App() {
 
           return (
             <View style={styles.container}>
-              <WebView
-                ref={webViewRef}
-                style={styles.webview}
-                source={{ uri: "https://bada-on-fe.vercel.app/" }}
-                onError={handleError}
-                onHttpError={handleError}
-                onLoadStart={handleLoadStart}
-                onLoadEnd={handleLoadEnd}
-                onMessage={handleMessage}
-                javaScriptEnabled={true}
-                domStorageEnabled={true}
-                originWhitelist={["*"]}
-                scalesPageToFit={true}
-                mixedContentMode="compatibility"
-                key={webViewKey}
-                injectedJavaScriptBeforeContentLoaded={injectsScript}
-              />
+              {uri && (
+                <WebView
+                  ref={webViewRef}
+                  style={styles.webview}
+                  source={{ uri }}
+                  onError={handleError}
+                  onHttpError={handleError}
+                  onLoadStart={handleLoadStart}
+                  onLoadEnd={handleLoadEnd}
+                  onMessage={handleMessage}
+                  javaScriptEnabled={true}
+                  domStorageEnabled={true}
+                  originWhitelist={["*"]}
+                  scalesPageToFit={true}
+                  mixedContentMode="compatibility"
+                  key={webViewKey}
+                  injectedJavaScriptBeforeContentLoaded={injectsScript}
+                />
+              )}
               {webViewError && (
                 <View style={styles.errorContainer}>
                   <Text style={styles.errorText}>{webViewError}</Text>

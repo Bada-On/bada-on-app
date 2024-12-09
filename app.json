@@ -8,8 +8,9 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": null,
-      "backgroundColor": "#1764BE"
+      "image": "./assets/splash.png",
+      "backgroundColor": "#1764BE",
+      "resizeMode": "cover"
     },
     "ios": {
       "supportsTablet": false,
@@ -24,7 +25,8 @@
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"]
+      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"],
+      "package": "com.hanbeulyou.badaonapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"

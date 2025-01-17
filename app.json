@@ -40,14 +40,6 @@
       "@react-native-firebase/app",
       "@react-native-firebase/messaging",
       [
-        "@sentry/react-native/expo",
-        {
-          "url": "https://sentry.io/",
-          "project": "bada-on-app",
-          "organization": "hanbeul-you"
-        }
-      ],
-      [
         "expo-build-properties",
         {
           "ios": {

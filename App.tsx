@@ -10,13 +10,8 @@ import {
 import { useFCMToken } from "./src/hooks/useFCMToken";
 import * as SplashScreen from "expo-splash-screen";
 import Splash from "./src/components/Splash";
-import * as Sentry from "@sentry/react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useUri } from "./src/hooks/useUri";
-
-Sentry.init({
-  dsn: "https://aa10b1982b82743fd65161af43c96ad7@o4508425511567360.ingest.us.sentry.io/4508439167893504",
-});
 
 export default function App() {
   const { uri } = useUri();

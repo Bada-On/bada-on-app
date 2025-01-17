@@ -28,14 +28,33 @@ export const useGeolocation = (
       const { status: existingStatus } =
         await Location.getForegroundPermissionsAsync();
 
-      // console.log("existingStatus", existingStatus);
-
-      if (existingStatus === "granted") {
-        return true;
+      // 권한 상태 구분
+      if (existingStatus === "undetermined") {
+        // 최초 권한 요청
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        return status === "granted";
       }
 
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      return status === "granted";
+      if (existingStatus === "denied") {
+        // 이미 거부된 상태
+        Alert.alert(
+          "권한 거부됨",
+          "위치 정보 권한이 필요합니다. 설정으로 이동하시겠습니까?",
+          [
+            {
+              text: "취소",
+              style: "cancel",
+            },
+            {
+              text: "설정으로 이동",
+              onPress: () => Linking.openSettings(),
+            },
+          ]
+        );
+        return false;
+      }
+
+      return existingStatus === "granted";
     } catch (err) {
       console.error("권한 요청 오류:", err);
       return false;
@@ -46,28 +65,6 @@ export const useGeolocation = (
     const hasPermission = await requestLocationPermission();
 
     if (!hasPermission) {
-      // const error: GeolocationError = {
-      //   type: "location_error",
-      //   payload: {
-      //     code: 1,
-      //     message: "위치 정보 권한이 거부되었습니다.",
-      //   },
-      // };
-      // sendToWeb(error);
-      Alert.prompt(
-        "권한 오류",
-        "위치 정보 권한이 필요합니다. 설정으로 이동하시겠습니까?",
-        [
-          {
-            text: "취소",
-            style: "cancel",
-          },
-          {
-            text: "확인",
-            onPress: () => Linking.openSettings(),
-          },
-        ]
-      );
       return;
     }
 
@@ -91,7 +88,7 @@ export const useGeolocation = (
         type: "location_error",
         payload: {
           code: error.code || 0,
-          message: error.message || "위치 정보를 가져오는데 실패했습니다.",
+          message: error.message || "위��� 정보를 가져오는데 실패했습니다.",
         },
       };
       sendToWeb(errorData);
